@@ -32,17 +32,23 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
-       builder: (context, child) {
+      builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: Colors.redAccent,
-                  onPrimary: Colors.white,
-                  onSurface: Theme.of(context).brightness == Brightness.light ? const Color(0xFF122E2A) : Colors.white,
-                ),
+              primary: Colors.redAccent,
+              onPrimary: Colors.white,
+              onSurface: Theme.of(context).brightness == Brightness.light
+                  ? const Color(0xFF122E2A)
+                  : Colors.white,
+            ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                textStyle: TextStyle(color:Theme.of(context).brightness == Brightness.light ? const Color(0xFF122E2A) : Colors.redAccent,)
+                textStyle: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? const Color(0xFF122E2A)
+                      : Colors.redAccent,
+                ),
               ),
             ),
           ),
@@ -63,18 +69,20 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
         title: _titleController.text,
         amount: double.parse(_amountController.text),
         date: _selectedDate,
-        type: 'expense', 
+        type: 'expense',
         category: _selectedCategory,
       );
-       try {
+      try {
         await dbHelper.addTransaction(newTransaction);
         if (mounted) {
           Navigator.of(context).pop(true);
         }
       } catch (e) {
-        if(mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString().replaceFirst("Exception: ", ""))),
+            SnackBar(
+              content: Text(e.toString().replaceFirst("Exception: ", "")),
+            ),
           );
         }
       }
@@ -85,12 +93,19 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final onBackgroundColor = isDarkMode ? Colors.white : const Color(0xFF122E2A);
-    final surfaceColor = isDarkMode ? const Color(0xFF1A3833) : Colors.grey.shade200;
+    final onBackgroundColor = isDarkMode
+        ? Colors.white
+        : const Color(0xFF122E2A);
+    final surfaceColor = isDarkMode
+        ? const Color(0xFF1A3833)
+        : Colors.grey.shade200;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registrar Gasto', style: theme.textTheme.titleLarge?.copyWith(color: onBackgroundColor)),
+        title: Text(
+          'Registrar Gasto',
+          style: theme.textTheme.titleLarge?.copyWith(color: onBackgroundColor),
+        ),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
@@ -107,8 +122,14 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _titleController,
-                style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
-                decoration: _buildInputDecoration('Descripción', surfaceColor, onBackgroundColor),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: onBackgroundColor,
+                ),
+                decoration: _buildInputDecoration(
+                  'Descripción',
+                  surfaceColor,
+                  onBackgroundColor,
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese una descripción';
@@ -119,12 +140,24 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _amountController,
-                style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
-                decoration: _buildInputDecoration('Monto', surfaceColor, onBackgroundColor).copyWith(
-                  prefixText: 'S/ ',
-                  prefixStyle: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor, fontWeight: FontWeight.bold),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: onBackgroundColor,
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration:
+                    _buildInputDecoration(
+                      'Monto',
+                      surfaceColor,
+                      onBackgroundColor,
+                    ).copyWith(
+                      prefixText: 'S/ ',
+                      prefixStyle: theme.textTheme.bodyMedium?.copyWith(
+                        color: onBackgroundColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese un monto';
@@ -142,7 +175,9 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
               const Spacer(),
               ElevatedButton(
                 onPressed: _submitData,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                ),
                 child: const Text('Guardar Gasto'),
               ),
               const SizedBox(height: 16),
@@ -153,7 +188,11 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String label, Color surfaceColor, Color onBackgroundColor) {
+  InputDecoration _buildInputDecoration(
+    String label,
+    Color surfaceColor,
+    Color onBackgroundColor,
+  ) {
     return InputDecoration(
       labelText: label,
       labelStyle: GoogleFonts.poppins(color: onBackgroundColor.withAlpha(150)),
@@ -170,29 +209,39 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
     );
   }
 
-  Widget _buildCategoryDropdown(ThemeData theme, Color surfaceColor, Color onBackgroundColor) {
+  Widget _buildCategoryDropdown(
+    ThemeData theme,
+    Color surfaceColor,
+    Color onBackgroundColor,
+  ) {
     return DropdownButtonFormField<String>(
       initialValue: _selectedCategory,
-      hint: Text('Categoría del Gasto', style: GoogleFonts.poppins(color: onBackgroundColor.withAlpha(150))),
+      hint: Text(
+        'Categoría del Gasto',
+        style: GoogleFonts.poppins(color: onBackgroundColor.withAlpha(150)),
+      ),
       style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
       decoration: _buildInputDecoration('', surfaceColor, onBackgroundColor),
       dropdownColor: surfaceColor,
       items: <String>['Necesidades', 'Deseos'].map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
+        return DropdownMenuItem<String>(value: value, child: Text(value));
       }).toList(),
       onChanged: (newValue) {
         setState(() {
           _selectedCategory = newValue;
         });
       },
-      validator: (value) => value == null ? 'Por favor seleccione una categoría' : null,
+      validator: (value) =>
+          value == null ? 'Por favor seleccione una categoría' : null,
     );
   }
 
-  Widget _buildDatePicker(BuildContext context, ThemeData theme, Color surfaceColor, Color onBackgroundColor) {
+  Widget _buildDatePicker(
+    BuildContext context,
+    ThemeData theme,
+    Color surfaceColor,
+    Color onBackgroundColor,
+  ) {
     return InkWell(
       onTap: () => _pickDate(context),
       borderRadius: BorderRadius.circular(16),
@@ -207,17 +256,26 @@ class RegisterExpenseScreenState extends State<RegisterExpenseScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_today, color: Colors.redAccent, size: 20),
+                const Icon(
+                  Icons.calendar_today,
+                  color: Colors.redAccent,
+                  size: 20,
+                ),
                 const SizedBox(width: 16),
                 Text(
                   'Fecha',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: onBackgroundColor,
+                  ),
                 ),
               ],
             ),
             Text(
               DateFormat.yMMMd('es').format(_selectedDate),
-              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: onBackgroundColor),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: onBackgroundColor,
+              ),
             ),
           ],
         ),

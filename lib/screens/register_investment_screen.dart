@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../helpers/database_helper.dart';
+import '../providers/balance_provider.dart';
 
 class RegisterInvestmentScreen extends StatefulWidget {
   const RegisterInvestmentScreen({super.key});
 
   @override
-  RegisterInvestmentScreenState createState() => RegisterInvestmentScreenState();
+  RegisterInvestmentScreenState createState() =>
+      RegisterInvestmentScreenState();
 }
 
 class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
@@ -37,11 +40,16 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
             colorScheme: Theme.of(context).colorScheme.copyWith(
                   primary: Colors.purpleAccent,
                   onPrimary: Colors.white,
-                  onSurface: Theme.of(context).brightness == Brightness.light ? const Color(0xFF122E2A) : Colors.white,
+                  onSurface: Theme.of(context).brightness == Brightness.light
+                      ? const Color(0xFF122E2A)
+                      : Colors.white,
                 ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).brightness == Brightness.light ? const Color(0xFF122E2A) : Colors.purpleAccent,
+                foregroundColor:
+                    Theme.of(context).brightness == Brightness.light
+                        ? const Color(0xFF122E2A)
+                        : Colors.purpleAccent,
               ),
             ),
           ),
@@ -62,18 +70,32 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
       final amount = double.parse(_amountController.text);
 
       try {
-        await dbHelper.insertInvestment(title, amount, _selectedDate, _selectedCategory);
-        
+        await dbHelper.insertInvestment(
+          title,
+          amount,
+          _selectedDate,
+          _selectedCategory,
+        );
+
         if (mounted) {
+          // Notify the balance provider to update balances
+          Provider.of<BalanceProvider>(context, listen: false).fetchBalances();
+
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Inversión registrada con éxito'), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Inversión registrada con éxito'),
+              backgroundColor: Colors.green,
+            ),
           );
           Navigator.of(context).pop(true);
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString().replaceFirst("Exception: ", "")), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(e.toString().replaceFirst("Exception: ", "")),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       }
@@ -84,12 +106,19 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final onBackgroundColor = isDarkMode ? Colors.white : const Color(0xFF122E2A);
-    final surfaceColor = isDarkMode ? const Color(0xFF1A3833) : Colors.grey.shade200;
+    final onBackgroundColor = isDarkMode
+        ? Colors.white
+        : const Color(0xFF122E2A);
+    final surfaceColor = isDarkMode
+        ? const Color(0xFF1A3833)
+        : Colors.grey.shade200;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registrar Inversión', style: theme.textTheme.titleLarge?.copyWith(color: onBackgroundColor)),
+        title: Text(
+          'Registrar Inversión',
+          style: theme.textTheme.titleLarge?.copyWith(color: onBackgroundColor),
+        ),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
@@ -107,8 +136,15 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
               children: <Widget>[
                 TextFormField(
                   controller: _titleController,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
-                  decoration: _buildInputDecoration('Descripción de la Inversión', surfaceColor, onBackgroundColor, Icons.description_outlined),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: onBackgroundColor,
+                  ),
+                  decoration: _buildInputDecoration(
+                    'Descripción de la Inversión',
+                    surfaceColor,
+                    onBackgroundColor,
+                    Icons.description_outlined,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingrese una descripción';
@@ -119,12 +155,25 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _amountController,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
-                  decoration: _buildInputDecoration('Monto', surfaceColor, onBackgroundColor, Icons.attach_money_outlined).copyWith(
-                    prefixText: 'S/ ',
-                    prefixStyle: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor, fontWeight: FontWeight.bold),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: onBackgroundColor,
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration:
+                      _buildInputDecoration(
+                        'Monto',
+                        surfaceColor,
+                        onBackgroundColor,
+                        Icons.attach_money_outlined,
+                      ).copyWith(
+                        prefixText: 'S/ ',
+                        prefixStyle: theme.textTheme.bodyMedium?.copyWith(
+                          color: onBackgroundColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor ingrese un monto';
@@ -138,10 +187,21 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
                 const SizedBox(height: 24),
                 DropdownButtonFormField<String>(
                   initialValue: _selectedCategory,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
-                  decoration: _buildInputDecoration('Sobre de Origen', surfaceColor, onBackgroundColor, Icons.category_outlined).copyWith(),
-                  dropdownColor: isDarkMode ? const Color(0xFF1A3833) : Colors.white,
-                  items: <String>['Necesidades', 'Deseos', 'Ahorro'].map((String value) {
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: onBackgroundColor,
+                  ),
+                  decoration: _buildInputDecoration(
+                    'Sobre de Origen',
+                    surfaceColor,
+                    onBackgroundColor,
+                    Icons.category_outlined,
+                  ).copyWith(),
+                  dropdownColor: isDarkMode
+                      ? const Color(0xFF1A3833)
+                      : Colors.white,
+                  items: <String>['Necesidades', 'Deseos', 'Ahorro'].map((
+                    String value,
+                  ) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -154,14 +214,22 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
                   },
                 ),
                 const SizedBox(height: 24),
-                _buildDatePicker(context, theme, surfaceColor, onBackgroundColor),
+                _buildDatePicker(
+                  context,
+                  theme,
+                  surfaceColor,
+                  onBackgroundColor,
+                ),
                 const SizedBox(height: 48),
                 ElevatedButton(
                   onPressed: _submitData,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purpleAccent,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    textStyle: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                    textStyle: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   child: const Text('Guardar Inversión'),
                 ),
@@ -174,7 +242,12 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String label, Color surfaceColor, Color onBackgroundColor, IconData icon) {
+  InputDecoration _buildInputDecoration(
+    String label,
+    Color surfaceColor,
+    Color onBackgroundColor,
+    IconData icon,
+  ) {
     return InputDecoration(
       labelText: label,
       labelStyle: GoogleFonts.poppins(color: onBackgroundColor.withAlpha(150)),
@@ -192,7 +265,12 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
     );
   }
 
-  Widget _buildDatePicker(BuildContext context, ThemeData theme, Color surfaceColor, Color onBackgroundColor) {
+  Widget _buildDatePicker(
+    BuildContext context,
+    ThemeData theme,
+    Color surfaceColor,
+    Color onBackgroundColor,
+  ) {
     return InkWell(
       onTap: () => _pickDate(context),
       borderRadius: BorderRadius.circular(16),
@@ -207,17 +285,26 @@ class RegisterInvestmentScreenState extends State<RegisterInvestmentScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_today, color: Colors.purpleAccent, size: 20),
+                const Icon(
+                  Icons.calendar_today,
+                  color: Colors.purpleAccent,
+                  size: 20,
+                ),
                 const SizedBox(width: 16),
                 Text(
                   'Fecha',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: onBackgroundColor,
+                  ),
                 ),
               ],
             ),
             Text(
               DateFormat.yMMMd('es').format(_selectedDate),
-              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: onBackgroundColor),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: onBackgroundColor,
+              ),
             ),
           ],
         ),

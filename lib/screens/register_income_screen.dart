@@ -35,13 +35,19 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: const Color(0xFF30E182),
-                  onPrimary: const Color(0xFF122E2A),
-                  onSurface: Theme.of(context).brightness == Brightness.light ? const Color(0xFF122E2A) : Colors.white,
-                ),
+              primary: const Color(0xFF30E182),
+              onPrimary: const Color(0xFF122E2A),
+              onSurface: Theme.of(context).brightness == Brightness.light
+                  ? const Color(0xFF122E2A)
+                  : Colors.white,
+            ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
-                textStyle: TextStyle(color: Theme.of(context).brightness == Brightness.light ? const Color(0xFF122E2A) : const Color(0xFF30E182),)
+                textStyle: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.light
+                      ? const Color(0xFF122E2A)
+                      : const Color(0xFF30E182),
+                ),
               ),
             ),
           ),
@@ -70,7 +76,7 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
           Navigator.of(context).pop(true);
         }
       } catch (e) {
-        if(mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al guardar ingreso: $e')),
           );
@@ -83,12 +89,19 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final onBackgroundColor = isDarkMode ? Colors.white : const Color(0xFF122E2A);
-    final surfaceColor = isDarkMode ? const Color(0xFF1A3833) : Colors.grey.shade200;
+    final onBackgroundColor = isDarkMode
+        ? Colors.white
+        : const Color(0xFF122E2A);
+    final surfaceColor = isDarkMode
+        ? const Color(0xFF1A3833)
+        : Colors.grey.shade200;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registrar Ingreso', style: theme.textTheme.titleLarge?.copyWith(color: onBackgroundColor)),
+        title: Text(
+          'Registrar Ingreso',
+          style: theme.textTheme.titleLarge?.copyWith(color: onBackgroundColor),
+        ),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
@@ -105,8 +118,14 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
             children: <Widget>[
               TextFormField(
                 controller: _titleController,
-                style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
-                decoration: _buildInputDecoration('Descripción', surfaceColor, onBackgroundColor),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: onBackgroundColor,
+                ),
+                decoration: _buildInputDecoration(
+                  'Descripción',
+                  surfaceColor,
+                  onBackgroundColor,
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese una descripción';
@@ -117,12 +136,24 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _amountController,
-                style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
-                decoration: _buildInputDecoration('Monto', surfaceColor, onBackgroundColor).copyWith(
-                  prefixText: 'S/ ',
-                  prefixStyle: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor, fontWeight: FontWeight.bold),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: onBackgroundColor,
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration:
+                    _buildInputDecoration(
+                      'Monto',
+                      surfaceColor,
+                      onBackgroundColor,
+                    ).copyWith(
+                      prefixText: 'S/ ',
+                      prefixStyle: theme.textTheme.bodyMedium?.copyWith(
+                        color: onBackgroundColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese un monto';
@@ -148,7 +179,11 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
     );
   }
 
-  InputDecoration _buildInputDecoration(String label, Color surfaceColor, Color onBackgroundColor) {
+  InputDecoration _buildInputDecoration(
+    String label,
+    Color surfaceColor,
+    Color onBackgroundColor,
+  ) {
     return InputDecoration(
       labelText: label,
       labelStyle: GoogleFonts.poppins(color: onBackgroundColor.withAlpha(150)),
@@ -165,7 +200,12 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
     );
   }
 
-  Widget _buildDatePicker(BuildContext context, ThemeData theme, Color surfaceColor, Color onBackgroundColor) {
+  Widget _buildDatePicker(
+    BuildContext context,
+    ThemeData theme,
+    Color surfaceColor,
+    Color onBackgroundColor,
+  ) {
     return InkWell(
       onTap: () => _pickDate(context),
       borderRadius: BorderRadius.circular(16),
@@ -180,17 +220,26 @@ class RegisterIncomeScreenState extends State<RegisterIncomeScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_today, color: Color(0xFF30E182), size: 20),
+                const Icon(
+                  Icons.calendar_today,
+                  color: Color(0xFF30E182),
+                  size: 20,
+                ),
                 const SizedBox(width: 16),
                 Text(
                   'Fecha',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: onBackgroundColor),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: onBackgroundColor,
+                  ),
                 ),
               ],
             ),
             Text(
               DateFormat.yMMMd('es').format(_selectedDate),
-              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: onBackgroundColor),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: onBackgroundColor,
+              ),
             ),
           ],
         ),

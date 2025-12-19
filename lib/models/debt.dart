@@ -1,4 +1,3 @@
-
 class Debt {
   final int? id;
   final String title;

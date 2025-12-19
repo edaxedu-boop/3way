@@ -6,10 +6,12 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'dart:io' show Platform;
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart'; // Import Intl
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_localizations/flutter_localizations.dart'; // Import localizations
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'helpers/notification_helper.dart';
+import 'providers/balance_provider.dart';
 import 'providers/navigation_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/welcome_screen.dart';
@@ -22,15 +24,24 @@ import 'screens/quiz_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set the default locale for the entire app
+  // Initialize locale
   await initializeDateFormatting('es_PE', null);
   Intl.defaultLocale = 'es_PE';
 
+  // Database initialization
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
+  }
+
+  // Notification initialization
+  if (!kIsWeb) {
+    // Notifications are not typically supported on web
+    await NotificationHelper.init();
+    await NotificationHelper.requestPermissions();
+    await NotificationHelper.scheduleDailyNotifications();
   }
 
   runApp(const MyApp());
@@ -79,6 +90,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => NavigationProvider()),
+        ChangeNotifierProvider(create: (context) => BalanceProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -87,10 +99,24 @@ class MyApp extends StatelessWidget {
           const Color darkBackgroundColor = Color(0xFF0A1A18);
 
           final TextTheme appTextTheme = TextTheme(
-            displayLarge: GoogleFonts.poppins(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
-            titleLarge: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-            bodyMedium: GoogleFonts.poppins(fontSize: 16, color: Colors.white.withAlpha(204)),
-            labelLarge: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+            displayLarge: GoogleFonts.poppins(
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            titleLarge: GoogleFonts.poppins(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            bodyMedium: GoogleFonts.poppins(
+              fontSize: 16,
+              color: Colors.white.withAlpha(204),
+            ),
+            labelLarge: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           );
 
           final ThemeData darkTheme = ThemeData(
@@ -117,7 +143,9 @@ class MyApp extends StatelessWidget {
                 foregroundColor: primaryColor,
                 backgroundColor: accentColor,
                 minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 textStyle: appTextTheme.labelLarge,
               ),
             ),
@@ -148,7 +176,9 @@ class MyApp extends StatelessWidget {
               backgroundColor: Colors.transparent,
               elevation: 0,
               centerTitle: true,
-              titleTextStyle: appTextTheme.titleLarge?.copyWith(color: primaryColor),
+              titleTextStyle: appTextTheme.titleLarge?.copyWith(
+                color: primaryColor,
+              ),
               iconTheme: IconThemeData(color: primaryColor),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
@@ -156,8 +186,12 @@ class MyApp extends StatelessWidget {
                 foregroundColor: Colors.white,
                 backgroundColor: primaryColor,
                 minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                textStyle: appTextTheme.labelLarge?.copyWith(color: Colors.white),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                textStyle: appTextTheme.labelLarge?.copyWith(
+                  color: Colors.white,
+                ),
               ),
             ),
             bottomNavigationBarTheme: BottomNavigationBarThemeData(
@@ -173,22 +207,19 @@ class MyApp extends StatelessWidget {
             theme: lightTheme,
             darkTheme: darkTheme,
             themeMode: themeProvider.themeMode,
-            // Add localization delegates
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
-              Locale('es', 'PE'), // Peru
-              Locale('en', 'US'), // English as fallback
-            ],
-            locale: const Locale('es', 'PE'), // Set the locale
+            supportedLocales: const [Locale('es', 'PE'), Locale('en', 'US')],
+            locale: const Locale('es', 'PE'),
             home: const AuthWrapper(),
             routes: {
               '/main': (context) => const MainScreen(),
               '/register_debt': (context) => const RegisterDebtScreen(),
-              '/register_investment': (context) => const RegisterInvestmentScreen(),
+              '/register_investment': (context) =>
+                  const RegisterInvestmentScreen(),
               '/quiz': (context) => const QuizScreen(),
             },
           );

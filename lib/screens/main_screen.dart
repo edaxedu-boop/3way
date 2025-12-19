@@ -17,8 +17,10 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final GlobalKey<DebtsScreenState> _debtScreenKey = GlobalKey<DebtsScreenState>();
-  final GlobalKey<InvestmentsScreenState> _investmentsScreenKey = GlobalKey<InvestmentsScreenState>();
+  final GlobalKey<DebtsScreenState> _debtScreenKey =
+      GlobalKey<DebtsScreenState>();
+  final GlobalKey<InvestmentsScreenState> _investmentsScreenKey =
+      GlobalKey<InvestmentsScreenState>();
 
   late final List<Widget> _widgetOptions;
 
@@ -34,8 +36,15 @@ class _MainScreenState extends State<MainScreen> {
     ];
   }
 
-  void _navigateAndRefresh(String routeName, int screenIndex, VoidCallback refreshCallback) async {
-    final navigationProvider = Provider.of<NavigationProvider>(context, listen: false);
+  void _navigateAndRefresh(
+    String routeName,
+    int screenIndex,
+    VoidCallback refreshCallback,
+  ) async {
+    final navigationProvider = Provider.of<NavigationProvider>(
+      context,
+      listen: false,
+    );
     final result = await Navigator.pushNamed(context, routeName);
     if (result == true) {
       refreshCallback();
@@ -52,7 +61,11 @@ class _MainScreenState extends State<MainScreen> {
     switch (selectedIndex) {
       case 1: // Debt Screen
         floatingActionButton = FloatingActionButton(
-          onPressed: () => _navigateAndRefresh('/register_debt', 1, () => _debtScreenKey.currentState?.refreshDebtData()),
+          onPressed: () => _navigateAndRefresh(
+            '/register_debt',
+            1,
+            () => _debtScreenKey.currentState?.refreshDebtData(),
+          ),
           backgroundColor: const Color(0xFFFD6B6B),
           elevation: 2,
           tooltip: 'Añadir Deuda',
@@ -64,13 +77,17 @@ class _MainScreenState extends State<MainScreen> {
           onPressed: () {},
           backgroundColor: const Color(0xFF30E182),
           elevation: 2,
-          tooltip: 'Escanear QR',
-          child: const Icon(Icons.qr_code_scanner, color: Color(0xFF122E2A)),
+          tooltip: 'Ahorro',
+          child: const Icon(Icons.savings_rounded, color: Color(0xFF122E2A)),
         );
         break;
       case 3: // Investments Screen
         floatingActionButton = FloatingActionButton(
-          onPressed: () => _navigateAndRefresh('/register_investment', 3, () => _investmentsScreenKey.currentState?.refreshData()),
+          onPressed: () => _navigateAndRefresh(
+            '/register_investment',
+            3,
+            () => _investmentsScreenKey.currentState?.refreshData(),
+          ),
           backgroundColor: const Color(0xFF30E182),
           elevation: 2,
           tooltip: 'Añadir Inversión',
@@ -82,18 +99,15 @@ class _MainScreenState extends State<MainScreen> {
           onPressed: () => navigationProvider.setIndex(2),
           backgroundColor: const Color(0xFF30E182),
           elevation: 2,
-          tooltip: 'Escanear QR',
-          child: const Icon(Icons.qr_code_scanner, color: Color(0xFF122E2A)),
+          tooltip: 'Ahorro',
+          child: const Icon(Icons.savings_rounded, color: Color(0xFF122E2A)),
         );
         break;
     }
 
     return Scaffold(
       extendBody: true,
-      body: IndexedStack(
-        index: selectedIndex,
-        children: _widgetOptions,
-      ),
+      body: IndexedStack(index: selectedIndex, children: _widgetOptions),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: BottomAppBar(
@@ -103,20 +117,52 @@ class _MainScreenState extends State<MainScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            _buildNavItem(icon: Icons.home_filled, label: 'Inicio', index: 0, selectedIndex: selectedIndex, navigationProvider: navigationProvider),
-            _buildNavItem(icon: Icons.account_balance_wallet_outlined, label: 'Deudas', index: 1, selectedIndex: selectedIndex, navigationProvider: navigationProvider),
+            _buildNavItem(
+              icon: Icons.home_filled,
+              label: 'Inicio',
+              index: 0,
+              selectedIndex: selectedIndex,
+              navigationProvider: navigationProvider,
+            ),
+            _buildNavItem(
+              icon: Icons.account_balance_wallet_outlined,
+              label: 'Deudas',
+              index: 1,
+              selectedIndex: selectedIndex,
+              navigationProvider: navigationProvider,
+            ),
             const SizedBox(width: 48),
-            _buildNavItem(icon: Icons.trending_up, label: 'Inversiones', index: 3, selectedIndex: selectedIndex, navigationProvider: navigationProvider),
-            _buildNavItem(icon: Icons.lightbulb_outline, label: 'Aprende', index: 4, selectedIndex: selectedIndex, navigationProvider: navigationProvider),
+            _buildNavItem(
+              icon: Icons.trending_up,
+              label: 'Inversiones',
+              index: 3,
+              selectedIndex: selectedIndex,
+              navigationProvider: navigationProvider,
+            ),
+            _buildNavItem(
+              icon: Icons.lightbulb_outline,
+              label: 'Aprende',
+              index: 4,
+              selectedIndex: selectedIndex,
+              navigationProvider: navigationProvider,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem({required IconData icon, required String label, required int index, required int selectedIndex, required NavigationProvider navigationProvider}) {
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required int index,
+    required int selectedIndex,
+    required NavigationProvider navigationProvider,
+  }) {
     final bool isSelected = selectedIndex == index;
-    final Color color = isSelected ? const Color(0xFF30E182) : Colors.white.withAlpha(153);
+    final Color color = isSelected
+        ? const Color(0xFF30E182)
+        : Colors.white.withAlpha(153);
     return InkWell(
       onTap: () => navigationProvider.setIndex(index),
       borderRadius: BorderRadius.circular(20),
@@ -127,7 +173,14 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             Icon(icon, color: color, size: 24),
             const SizedBox(height: 4),
-            Text(label, style: GoogleFonts.poppins(color: color, fontSize: 10, fontWeight: FontWeight.w600)),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                color: color,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),

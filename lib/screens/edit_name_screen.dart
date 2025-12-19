@@ -49,7 +49,10 @@ class _EditNameScreenState extends State<EditNameScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Editar Nombre', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Editar Nombre',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
@@ -90,7 +93,13 @@ class _EditNameScreenState extends State<EditNameScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text('Guardar Cambios', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(
+                  'Guardar Cambios',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ],
           ),

@@ -52,7 +52,7 @@ class PinAuthScreenState extends State<PinAuthScreen> {
           if (name.isNotEmpty) {
             await prefs.setString('user_name', name);
           }
-          
+
           if (!mounted) return;
           Navigator.pushReplacement(
             context,
@@ -94,9 +94,15 @@ class PinAuthScreenState extends State<PinAuthScreen> {
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 56,
-      textStyle: GoogleFonts.poppins(fontSize: 20, color: theme.colorScheme.onSurface, fontWeight: FontWeight.w600),
+      textStyle: GoogleFonts.poppins(
+        fontSize: 20,
+        color: theme.colorScheme.onSurface,
+        fontWeight: FontWeight.w600,
+      ),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.onSurface.withAlpha((255 * 0.2).round())),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withAlpha((255 * 0.2).round()),
+        ),
         borderRadius: BorderRadius.circular(12),
       ),
     );
@@ -107,7 +113,9 @@ class PinAuthScreenState extends State<PinAuthScreen> {
 
     final submittedPinTheme = defaultPinTheme.copyWith(
       decoration: defaultPinTheme.decoration?.copyWith(
-        color: theme.colorScheme.primaryContainer.withAlpha((255 * 0.5).round()),
+        color: theme.colorScheme.primaryContainer.withAlpha(
+          (255 * 0.5).round(),
+        ),
       ),
     );
 
@@ -118,84 +126,113 @@ class PinAuthScreenState extends State<PinAuthScreen> {
         elevation: 0,
         leading: widget.isSettingPin
             ? IconButton(
-                icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: theme.colorScheme.onSurface,
+                ),
                 onPressed: () {
-                   if (_isConfirming) {
-                     setState(() {
-                       _isConfirming = false;
-                       _tempPin = null;
-                       _headerText = 'Crea tu PIN de 4 dígitos';
-                       _errorMessage = '';
-                       _pinController.clear();
-                     });
-                   } else {
-                     Navigator.of(context).pop();
-                   }
+                  if (_isConfirming) {
+                    setState(() {
+                      _isConfirming = false;
+                      _tempPin = null;
+                      _headerText = 'Crea tu PIN de 4 dígitos';
+                      _errorMessage = '';
+                      _pinController.clear();
+                    });
+                  } else {
+                    Navigator.of(context).pop();
+                  }
                 },
               )
             : null,
       ),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.lock_outline_rounded, size: 64, color: Colors.grey),
-                const SizedBox(height: 24),
-                Text(
-                  _headerText,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 32),
-                // Show name field only when setting PIN for the first time
-                if (widget.isSettingPin && !_isConfirming)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 24.0),
-                    child: TextFormField(
-                      controller: _nameController,
-                      keyboardType: TextInputType.name,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: InputDecoration(
-                        labelText: 'Tu Nombre (Opcional)',
-                        hintText: '¿Cómo te llamas?',
-                        floatingLabelBehavior: FloatingLabelBehavior.auto,
-                        prefixIcon: const Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.lock_outline_rounded,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      _headerText,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    if (widget.isSettingPin && !_isConfirming)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24.0),
+                        child: TextFormField(
+                          controller: _nameController,
+                          keyboardType: TextInputType.name,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: InputDecoration(
+                            labelText: 'Tu Nombre (Opcional)',
+                            hintText: '¿Cómo te llamas?',
+                            floatingLabelBehavior: FloatingLabelBehavior.auto,
+                            prefixIcon: const Icon(Icons.person_outline),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          textAlign: TextAlign.left,
+                          style: GoogleFonts.poppins(),
                         ),
                       ),
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.poppins(),
+                    Pinput(
+                      controller: _pinController,
+                      length: 4,
+                      defaultPinTheme: defaultPinTheme,
+                      focusedPinTheme: focusedPinTheme,
+                      submittedPinTheme: submittedPinTheme,
+                      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                      showCursor: true,
+                      onCompleted: (pin) => _submitPin(pin),
+                      obscureText: true,
+                      obscuringCharacter: '●',
                     ),
-                  ),
-                Pinput(
-                  controller: _pinController,
-                  length: 4,
-                  defaultPinTheme: defaultPinTheme,
-                  focusedPinTheme: focusedPinTheme,
-                  submittedPinTheme: submittedPinTheme,
-                  pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-                  showCursor: true,
-                  onCompleted: (pin) => _submitPin(pin),
-                  obscureText: true,
-                  obscuringCharacter: '●',
+                    if (_errorMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Text(
+                          _errorMessage,
+                          style: GoogleFonts.poppins(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    const SizedBox(height: 80),
+                  ],
                 ),
-                if (_errorMessage.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Text(
-                      _errorMessage,
-                      style: GoogleFonts.poppins(color: Colors.red, fontSize: 14),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                const SizedBox(height: 40), // Added space at the bottom
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
+              child: Text(
+                'Desarrollado por Edax Perú',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

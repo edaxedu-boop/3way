@@ -18,27 +18,46 @@ class QuizScreenState extends State<QuizScreen> {
 
   final List<Question> _questions = [
     Question(
-      text: 'Según la regla 50/30/20, ¿qué porcentaje de tus ingresos netos debe destinarse a "Necesidades"?',
+      text:
+          'Según la regla 50/30/20, ¿qué porcentaje de tus ingresos netos debe destinarse a "Necesidades"?',
       options: ['30%', '50%', '20%', '40%'],
       correctAnswerIndex: 1,
     ),
     Question(
-      text: 'El 30% de la regla corresponde a tus "Deseos". ¿Cuál de estos es un ejemplo de un deseo?',
-      options: ['El alquiler de tu casa', 'Comprar un videojuego nuevo', 'Pagar la factura de la luz', 'La compra del supermercado'],
+      text:
+          'El 30% de la regla corresponde a tus "Deseos". ¿Cuál de estos es un ejemplo de un deseo?',
+      options: [
+        'El alquiler de tu casa',
+        'Comprar un videojuego nuevo',
+        'Pagar la factura de la luz',
+        'La compra del supermercado',
+      ],
       correctAnswerIndex: 1,
     ),
     Question(
-      text: 'El 20% final de la regla se destina a "Ahorros e Inversiones". ¿Qué incluye esta categoría?',
-      options: ['Cenar en un restaurante caro', 'Pagar deudas pendientes y ahorrar', 'Ir al cine', 'Comprar ropa de marca'],
+      text:
+          'El 20% final de la regla se destina a "Ahorros e Inversiones". ¿Qué incluye esta categoría?',
+      options: [
+        'Cenar en un restaurante caro',
+        'Pagar deudas pendientes y ahorrar',
+        'Ir al cine',
+        'Comprar ropa de marca',
+      ],
       correctAnswerIndex: 1,
     ),
     Question(
       text: '¿Cuál es el objetivo principal de la regla 50/30/20?',
-      options: ['Gastar todo tu dinero cada mes', 'Nunca darte un gusto', 'Ayudarte a gestionar tu dinero de forma equilibrada', 'Solo ahorrar para la jubilación'],
+      options: [
+        'Gastar todo tu dinero cada mes',
+        'Nunca darte un gusto',
+        'Ayudarte a gestionar tu dinero de forma equilibrada',
+        'Solo ahorrar para la jubilación',
+      ],
       correctAnswerIndex: 2,
     ),
     Question(
-      text: 'Si tus ingresos netos son de S/ 2,000, ¿cuánto deberías destinar a tus "Necesidades"?',
+      text:
+          'Si tus ingresos netos son de S/ 2,000, ¿cuánto deberías destinar a tus "Necesidades"?',
       options: ['S/ 600', 'S/ 1,000', 'S/ 400', 'S/ 800'],
       correctAnswerIndex: 1,
     ),
@@ -57,7 +76,7 @@ class QuizScreenState extends State<QuizScreen> {
 
     final navigator = Navigator.of(context);
     Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return; 
+      if (!mounted) return;
       if (_questionIndex < _questions.length - 1) {
         setState(() {
           _questionIndex++;
@@ -95,7 +114,10 @@ class QuizScreenState extends State<QuizScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Quiz Financiero', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Quiz Financiero',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
@@ -108,7 +130,11 @@ class QuizScreenState extends State<QuizScreen> {
             Text(
               'Pregunta ${_questionIndex + 1}/${_questions.length}',
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: const Color(0xFF30E182)),
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF30E182),
+              ),
             ),
             const SizedBox(height: 20),
             Container(
@@ -116,24 +142,38 @@ class QuizScreenState extends State<QuizScreen> {
               decoration: BoxDecoration(
                 color: isDarkMode ? const Color(0xFF1F222A) : Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [BoxShadow(color: Colors.black.withAlpha((255 * 0.05).round()), blurRadius: 10)],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha((255 * 0.05).round()),
+                    blurRadius: 10,
+                  ),
+                ],
               ),
               child: Text(
                 question.text,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w500),
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             const SizedBox(height: 30),
             ...List.generate(question.options.length, (index) {
-              Color buttonColor = isDarkMode ? const Color(0xFF1F222A) : Colors.white;
+              Color buttonColor = isDarkMode
+                  ? const Color(0xFF1F222A)
+                  : Colors.white;
               Color borderColor = Colors.transparent;
               Color textColor = isDarkMode ? Colors.white : Colors.black87;
 
               if (_isAnswered) {
                 if (index == _selectedAnswerIndex) {
-                  borderColor = index == question.correctAnswerIndex ? Colors.greenAccent : Colors.redAccent;
-                  buttonColor = index == question.correctAnswerIndex ? Colors.green.withAlpha((255 * 0.1).round()) : Colors.red.withAlpha((255 * 0.1).round());
+                  borderColor = index == question.correctAnswerIndex
+                      ? Colors.greenAccent
+                      : Colors.redAccent;
+                  buttonColor = index == question.correctAnswerIndex
+                      ? Colors.green.withAlpha((255 * 0.1).round())
+                      : Colors.red.withAlpha((255 * 0.1).round());
                 } else if (index == question.correctAnswerIndex) {
                   borderColor = Colors.greenAccent;
                 }
@@ -152,7 +192,11 @@ class QuizScreenState extends State<QuizScreen> {
                   child: Text(
                     question.options[index],
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500, color: textColor),
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: textColor,
+                    ),
                   ),
                 ),
               );

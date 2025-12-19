@@ -16,6 +16,11 @@ El núcleo de la aplicación es un sistema de "sobres" digitales que representa 
 
 ## 3. Características Implementadas
 
+### Flujo de Bienvenida y Personalización
+*   **Nombre de Usuario Obligatorio:** En el primer uso, la aplicación solicita al usuario su nombre a través de una pantalla dedicada. El botón para continuar permanece desactivado hasta que se introduce un nombre, asegurando la personalización desde el inicio.
+*   **Bienvenida Personalizada:** La pantalla principal saluda al usuario por su nombre real, obtenido de las preferencias guardadas (Ej: "Hola, [Nombre]"). Se eliminó el nombre estático "Alejandro".
+*   **Icono de Usuario Actualizado:** Se reemplazó el `CircleAvatar` por un icono de usuario genérico (`Icons.account_circle_outlined`) más limpio y coherente con el diseño.
+
 ### Pantalla Principal (Home)
 *   **Diseño Moderno Basado en Tarjetas:** La pantalla de inicio fue rediseñada para mostrar tres tarjetas prominentes y claras que representan los saldos actuales de los sobres **"Necesidades"**, **"Deseos"** y **"Ahorro"**.
 *   **Resumen General:** Se mantienen los resúmenes de ingresos y gastos totales.
@@ -23,31 +28,31 @@ El núcleo de la aplicación es un sistema de "sobres" digitales que representa 
 *   **Navegación Intuitiva:** Un `FloatingActionButton` central despliega opciones para registrar rápidamente ingresos, gastos, deudas o inversiones.
 
 ### Flujo de Transacciones, Deudas e Inversiones
-
 *   **Registro de Ingresos y Gastos:**
     *   Los ingresos se distribuyen automáticamente en los tres sobres.
     *   Los gastos se descuentan del sobre de "Necesidades" o "Deseos" seleccionado.
-
 *   **Gestión de Deudas (Mejorado):**
     *   La adquisición de una deuda solo la registra para seguimiento, sin afectar los sobres.
     *   El pago de deudas se procesa como un gasto, permitiendo seleccionar el sobre de origen ("Necesidades", "Deseos" o "Ahorro") y descontando el saldo correspondiente.
-
+    *   **Interfaz de Pago Moderna:** Se rediseñó el diálogo de pago de deudas con una interfaz más intuitiva, validación mejorada y notificaciones flotantes.
 *   **Gestión de Inversiones (Reestructurado y Corregido):**
     *   **Vínculo Transaccional:** Cada inversión está ahora **directa y permanentemente vinculada** a la transacción de gasto de la cual se originó. Esto se logra a través de una columna `transactionId` en la base de datos.
-    *   **Registro Confiable:** Al registrar una inversión, el sistema primero crea una transacción de tipo "gasto" (descontando el dinero del sobre seleccionado) y luego guarda la inversión, asociándola con el ID de esa transacción. Esto garantiza que el saldo del sobre se actualice correctamente.
+    *   **Registro Confiable:** Al registrar una inversión, el sistema primero crea una transacción de tipo "gasto" (descontando el dinero del sobre seleccionado) y luego guarda la inversión, asociándola con el ID de esa transacción. 
     *   **Reversión Precisa:** Al eliminar una inversión, el sistema utiliza el `transactionId` para encontrar la transacción de gasto original y revertirla, devolviendo el monto exacto al sobre del que provino.
 
-### Base de Datos (`database_helper.dart`)
-*   **Versión 4:** La base de datos fue migrada a la versión 4 para incluir los cambios en el esquema.
-*   **Esquema `investments` Actualizado:** La tabla `investments` ahora contiene una columna `transactionId` con una clave foránea que la vincula a la tabla `transactions`.
-*   **Lógica Refactorizada:** Las funciones `insertInvestment` y `deleteInvestment` fueron completamente reescritas para implementar el nuevo flujo de vínculo transaccional, asegurando la integridad de los datos.
+### Sistema de Notificaciones
+*   **Recordatorios Diarios Automáticos:** La aplicación programa dos notificaciones locales recurrentes para fomentar el hábito de registrar transacciones:
+    *   **Recordatorio Matutino (8:00 AM):** "¡Buen día! ¿Registraste todo lo de ayer? Mantén tus finanzas al día."
+    *   **Recordatorio Nocturno (9:00 PM):** "No olvides registrar tus gastos. ¡Cada pequeño paso cuenta para alcanzar tu meta!"
+*   **Gestión de Permisos:** La aplicación solicita los permisos necesarios para enviar notificaciones en Android y iOS al iniciarse por primera vez.
+*   **Lógica Centralizada:** Toda la funcionalidad de notificaciones se gestiona a través de un `NotificationHelper` dedicado.
+
 
 ## 4. Estilo y Diseño
 *   **Consistencia Visual y Soporte para Modo Oscuro/Claro.**
 *   **Paleta de Colores Intuitiva y Tipografía Moderna.**
 
 ## 5. Correcciones de Bugs Anteriores
-
 *   **Lógica de Cierre de Pantalla:** Corregido el orden de operaciones para mostrar mensajes y cerrar la pantalla de forma segura.
 *   **Bloqueo de Base de Datos:** Solucionado el error `database has been locked` al unificar las operaciones de base de datos en una sola transacción atómica.
 *   **Desbordamiento Visual:** Eliminado el error `RenderFlex overflowed` en la pantalla de inversión mediante el uso de `SingleChildScrollView`.
