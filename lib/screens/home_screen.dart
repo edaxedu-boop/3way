@@ -30,9 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadInitialData() {
-    // Fetch balances via the provider, not listening here because it's a one-time action
     Provider.of<BalanceProvider>(context, listen: false).fetchBalances();
-    // Load other page-specific data
     _loadPageSpecificData();
   }
 
@@ -51,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _handleRefresh() async {
-    // Both futures will run concurrently
     await Future.wait([
       Provider.of<BalanceProvider>(context, listen: false).fetchBalances(),
       _loadPageSpecificData(),
@@ -73,16 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
       await dbHelper.deleteTransaction(transaction.id!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Transacción eliminada'),
+        const SnackBar(
+          content: Text('Transacción eliminada permanentemente.'),
           backgroundColor: Colors.red,
-          action: SnackBarAction(
-            label: 'DESHACER',
-            textColor: Colors.white,
-            onPressed: () {
-              _undoDelete(transaction);
-            },
-          ),
         ),
       );
       _handleRefresh(); // Refresh data after deletion
@@ -97,26 +87,77 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _undoDelete(Transaction transaction) async {
-    try {
-      await dbHelper.addTransaction(transaction);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Transacción restaurada'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      _handleRefresh();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al restaurar: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+  Future<bool?> _showConfirmationDialog() {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          backgroundColor: isDarkMode ? const Color(0xFF2D323E) : Colors.white,
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 50),
+              const SizedBox(height: 16),
+              Text(
+                'Confirmar Eliminación',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            '¿Estás seguro de que quieres eliminar esta transacción?\nEsta acción es permanente y no se puede deshacer.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: isDarkMode ? Colors.white.withOpacity(0.7) : Colors.black54,
+            ),
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: isDarkMode ? Colors.white.withOpacity(0.8) : Colors.black54),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, color: isDarkMode ? Colors.white : Colors.black87),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: Text(
+                'Eliminar',
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.center,
+        );
+      },
+    );
   }
 
   @override
@@ -618,6 +659,9 @@ class _HomeScreenState extends State<HomeScreen> {
               return Dismissible(
                 key: ValueKey(tx.id),
                 direction: DismissDirection.endToStart,
+                confirmDismiss: (direction) async {
+                  return await _showConfirmationDialog();
+                },
                 onDismissed: (direction) {
                   _deleteTransaction(tx);
                 },

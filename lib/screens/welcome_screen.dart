@@ -73,7 +73,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   const Icon(Icons.wallet, color: Color(0xFF30E182), size: 30),
                   const SizedBox(width: 8),
                   Text(
-                    'Zero Deudas',
+                    '3Way',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontSize: 24,
@@ -115,7 +115,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Domina la regla 50/30/20, elimina tus deudas y aprende a invertir con educación financiera simplificada.',
+                    'Simplifica tus finanzas con el método 3Way. Domina el 50/30/20, elimina deudas y cultiva tu patrimonio con educación práctica.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
                       color: Colors.white.withAlpha(178),
@@ -126,7 +126,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
               const SizedBox(height: 40),
               Text(
-                'By Edax',
+                'Tu fortuna bajo control con el método 3Way.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   color: Colors.white.withAlpha(178),

@@ -16,7 +16,6 @@ class PinAuthScreen extends StatefulWidget {
 
 class PinAuthScreenState extends State<PinAuthScreen> {
   final _pinController = TextEditingController();
-  final _nameController = TextEditingController(); // Controller for the name
   String? _tempPin;
   bool _isConfirming = false;
   String _headerText = 'Ingresa tu PIN';
@@ -46,12 +45,8 @@ class PinAuthScreenState extends State<PinAuthScreen> {
       } else {
         // Second step: User is confirming the PIN
         if (_tempPin == pin) {
-          // PINs match, save PIN and Name
+          // PINs match, save PIN
           await prefs.setString('user_pin', pin);
-          final name = _nameController.text.trim();
-          if (name.isNotEmpty) {
-            await prefs.setString('user_name', name);
-          }
 
           if (!mounted) return;
           Navigator.pushReplacement(
@@ -170,26 +165,6 @@ class PinAuthScreenState extends State<PinAuthScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    if (widget.isSettingPin && !_isConfirming)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 24.0),
-                        child: TextFormField(
-                          controller: _nameController,
-                          keyboardType: TextInputType.name,
-                          textCapitalization: TextCapitalization.words,
-                          decoration: InputDecoration(
-                            labelText: 'Tu Nombre (Opcional)',
-                            hintText: '¿Cómo te llamas?',
-                            floatingLabelBehavior: FloatingLabelBehavior.auto,
-                            prefixIcon: const Icon(Icons.person_outline),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          textAlign: TextAlign.left,
-                          style: GoogleFonts.poppins(),
-                        ),
-                      ),
                     Pinput(
                       controller: _pinController,
                       length: 4,

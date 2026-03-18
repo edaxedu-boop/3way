@@ -30,6 +30,44 @@ class LearnScreen extends StatelessWidget {
         children: [
           _buildQuizCard(context),
           const SizedBox(height: 24),
+          _buildLearnCard(
+            context: context,
+            cardColor: cardColor,
+            icon: Icons.pie_chart_outline,
+            iconColor: Colors.amberAccent,
+            title: 'La Regla 50/30/20',
+            content: _buildRichText([
+              const TextSpan(
+                text:
+                    'Es un método simple y efectivo para presupuestar tus ingresos. La idea es dividir tu dinero después de impuestos en tres categorías:\n\n',
+              ),
+              const TextSpan(
+                text: '50% para Necesidades:\n',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Gastos esenciales que no puedes evitar. Esto incluye alquiler o hipoteca, servicios básicos (agua, luz), comida, transporte y seguros.\n\n',
+              ),
+              const TextSpan(
+                text: '30% para Deseos:\n',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Gastos que mejoran tu calidad de vida pero no son esenciales. Por ejemplo: cenas fuera, hobbies, suscripciones a servicios de streaming, vacaciones, etc.\n\n',
+              ),
+              const TextSpan(
+                text: '20% para Ahorro y Deudas:\n',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(
+                text:
+                    'Esta es la parte más importante para tu futuro financiero. Úsala para pagar deudas (más allá del pago mínimo), ahorrar para tu fondo de emergencia o invertir.',
+              ),
+            ]),
+          ),
+          const SizedBox(height: 16),
           Text(
             'Conceptos Clave',
             style: GoogleFonts.poppins(

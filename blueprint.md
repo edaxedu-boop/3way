@@ -1,58 +1,50 @@
-# Blueprint: App de Finanzas Personales con Presupuesto 50/30/20
+# Blueprint: 3Way - Gestor de Finanzas Personales
 
 ## 1. Visión General
 
-Esta aplicación es una herramienta de finanzas personales diseñada para ayudar a los usuarios a gestionar su dinero de forma proactiva utilizando la **regla de presupuesto 50/30/20**. El sistema clasifica automáticamente los ingresos y guía al usuario para que gaste de forma inteligente, asegurando que se mantenga dentro de sus límites y trabaje para alcanzar sus metas de ahorro.
+**3Way** es una aplicación móvil integral diseñada para empoderar a los usuarios en la gestión de sus finanzas personales, basándose en la popular regla 50/30/20. La app permite un seguimiento detallado de ingresos y gastos, los clasifica en Necesidades, Deseos y Ahorro/Inversión, y fomenta la educación financiera a través de módulos prácticos. La seguridad es un pilar fundamental, implementada a través de un sistema de autenticación por PIN.
 
-## 2. Lógica y Arquitectura del Presupuesto
+## 2. Arquitectura y Componentes Clave
 
-El núcleo de la aplicación es un sistema de "sobres" digitales que representa la regla 50/30/20.
+La aplicación está construida sobre una arquitectura moderna y escalable de Flutter.
 
-*   **Distribución Automática de Ingresos:** Cada vez que se registra un ingreso, el monto se distribuye automáticamente en tres sobres principales:
-    *   **50% para Necesidades:** Gastos esenciales como vivienda, comida, servicios.
-    *   **30% para Deseos:** Gastos no esenciales como entretenimiento, hobbies, etc.
-    *   **20% para Ahorro:** Dinero destinado a pagar deudas, invertir o guardar para el futuro.
-*   **Validación de Saldo:** El sistema no permite registrar un gasto, pago de deuda o inversión si no hay fondos suficientes en el sobre correspondiente. Esto evita que el usuario gaste más de lo que ha presupuestado.
+*   **Base de Datos Local:** Se utiliza `sqflite` para persistir todos los datos del usuario (transacciones, PIN) de forma segura y local en el dispositivo.
+*   **Gestión de Estado:** Se emplea el paquete `provider` para una gestión de estado centralizada y eficiente.
+*   **Flujo de Autenticación por PIN:** Se asegura la app mediante un PIN de 4 dígitos.
+*   **Sistema de Theming Avanzado:** La app cuenta con un diseño visual pulido y dos temas (claro y oscuro) completamente definidos.
 
-## 3. Características Implementadas
+## 3. Plan de Cambios Recientes
 
-### Flujo de Bienvenida y Personalización
-*   **Nombre de Usuario Obligatorio:** En el primer uso, la aplicación solicita al usuario su nombre a través de una pantalla dedicada. El botón para continuar permanece desactivado hasta que se introduce un nombre, asegurando la personalización desde el inicio.
-*   **Bienvenida Personalizada:** La pantalla principal saluda al usuario por su nombre real, obtenido de las preferencias guardadas (Ej: "Hola, [Nombre]"). Se eliminó el nombre estático "Alejandro".
-*   **Icono de Usuario Actualizado:** Se reemplazó el `CircleAvatar` por un icono de usuario genérico (`Icons.account_circle_outlined`) más limpio y coherente con el diseño.
+### 3.1. Rebranding a "3Way"
 
-### Pantalla Principal (Home)
-*   **Diseño Moderno Basado en Tarjetas:** La pantalla de inicio fue rediseñada para mostrar tres tarjetas prominentes y claras que representan los saldos actuales de los sobres **"Necesidades"**, **"Deseos"** y **"Ahorro"**.
-*   **Resumen General:** Se mantienen los resúmenes de ingresos y gastos totales.
-*   **Transacciones Recientes:** Una lista muestra los últimos movimientos realizados.
-*   **Navegación Intuitiva:** Un `FloatingActionButton` central despliega opciones para registrar rápidamente ingresos, gastos, deudas o inversiones.
+Se realizó un cambio completo de identidad de la marca, pasando de "Zero Deudas" a "3Way" para reflejar mejor el enfoque en el método de presupuestos 50/30/20.
 
-### Flujo de Transacciones, Deudas e Inversiones
-*   **Registro de Ingresos y Gastos:**
-    *   Los ingresos se distribuyen automáticamente en los tres sobres.
-    *   Los gastos se descuentan del sobre de "Necesidades" o "Deseos" seleccionado.
-*   **Gestión de Deudas (Mejorado):**
-    *   La adquisición de una deuda solo la registra para seguimiento, sin afectar los sobres.
-    *   El pago de deudas se procesa como un gasto, permitiendo seleccionar el sobre de origen ("Necesidades", "Deseos" o "Ahorro") y descontando el saldo correspondiente.
-    *   **Interfaz de Pago Moderna:** Se rediseñó el diálogo de pago de deudas con una interfaz más intuitiva, validación mejorada y notificaciones flotantes.
-*   **Gestión de Inversiones (Reestructurado y Corregido):**
-    *   **Vínculo Transaccional:** Cada inversión está ahora **directa y permanentemente vinculada** a la transacción de gasto de la cual se originó. Esto se logra a través de una columna `transactionId` en la base de datos.
-    *   **Registro Confiable:** Al registrar una inversión, el sistema primero crea una transacción de tipo "gasto" (descontando el dinero del sobre seleccionado) y luego guarda la inversión, asociándola con el ID de esa transacción. 
-    *   **Reversión Precisa:** Al eliminar una inversión, el sistema utiliza el `transactionId` para encontrar la transacción de gasto original y revertirla, devolviendo el monto exacto al sobre del que provino.
+### 3.2. Mejora de Seguridad y Diseño en Eliminación
 
-### Sistema de Notificaciones
-*   **Recordatorios Diarios Automáticos:** La aplicación programa dos notificaciones locales recurrentes para fomentar el hábito de registrar transacciones:
-    *   **Recordatorio Matutino (8:00 AM):** "¡Buen día! ¿Registraste todo lo de ayer? Mantén tus finanzas al día."
-    *   **Recordatorio Nocturno (9:00 PM):** "No olvides registrar tus gastos. ¡Cada pequeño paso cuenta para alcanzar tu meta!"
-*   **Gestión de Permisos:** La aplicación solicita los permisos necesarios para enviar notificaciones en Android y iOS al iniciarse por primera vez.
-*   **Lógica Centralizada:** Toda la funcionalidad de notificaciones se gestiona a través de un `NotificationHelper` dedicado.
+Para prevenir la eliminación accidental de datos y mejorar la experiencia de usuario, se rediseñó el diálogo de confirmación en la `HomeScreen`.
 
+*   **Confirmación de Borrado:** Al deslizar para eliminar una transacción, se muestra un `AlertDialog` que pide al usuario confirmar la acción.
+*   **Eliminación Permanente:** Se eliminó la funcionalidad de "Deshacer". Una vez confirmada, la eliminación de la transacción es definitiva.
+*   **Diseño Mejorado del Diálogo:** Se aplicaron mejoras visuales al `AlertDialog` para hacerlo más intuitivo y coherente con el estilo de la app:
+    *   Se añadió un **icono de advertencia** para comunicar visualmente el riesgo.
+    *   Se mejoró la **jerarquía del texto** con títulos en negrita.
+    *   Se estilizaron los botones de acción, usando `ElevatedButton` para un look moderno y diferenciando claramente el botón "Eliminar" (con fondo rojo) del botón "Cancelar" (con estilo neutro y texto adaptativo al tema).
 
-## 4. Estilo y Diseño
-*   **Consistencia Visual y Soporte para Modo Oscuro/Claro.**
-*   **Paleta de Colores Intuitiva y Tipografía Moderna.**
+## 4. Características Implementadas
 
-## 5. Correcciones de Bugs Anteriores
-*   **Lógica de Cierre de Pantalla:** Corregido el orden de operaciones para mostrar mensajes y cerrar la pantalla de forma segura.
-*   **Bloqueo de Base de Datos:** Solucionado el error `database has been locked` al unificar las operaciones de base de datos en una sola transacción atómica.
-*   **Desbordamiento Visual:** Eliminado el error `RenderFlex overflowed` en la pantalla de inversión mediante el uso de `SingleChildScrollView`.
+*   **Módulo de Seguridad y Bienvenida:**
+    *   Configuración y autenticación por PIN.
+*   **Pantalla Principal (Dashboard):**
+    *   Resumen de balance, ingresos y gastos.
+    *   Lista de transacciones recientes con un **diálogo de confirmación de borrado mejorado**, que previene eliminaciones accidentales.
+*   **Gestión Completa de Transacciones:**
+    *   Registro de ingresos y gastos.
+*   **Seguimiento de Deudas e Inversiones.**
+*   **Módulo de Educación Financiera con Cuestionario.**
+*   **Notificaciones Inteligentes para registro diario.**
+
+## 5. Estilo y Diseño
+
+*   Interfaz de usuario moderna, limpia y centrada en la legibilidad.
+*   Paleta de colores principal basada en verdes y tonos oscuros (`#122E2A`, `#30E182`).
+*   Tipografía `Poppins` de Google Fonts para un aspecto profesional y fresco.

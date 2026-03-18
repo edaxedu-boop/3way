@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'helpers/notification_helper.dart';
 import 'providers/balance_provider.dart';
 import 'providers/navigation_provider.dart';
 import 'providers/theme_provider.dart';
@@ -34,14 +33,6 @@ void main() async {
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
-  }
-
-  // Notification initialization
-  if (!kIsWeb) {
-    // Notifications are not typically supported on web
-    await NotificationHelper.init();
-    await NotificationHelper.requestPermissions();
-    await NotificationHelper.scheduleDailyNotifications();
   }
 
   runApp(const MyApp());
@@ -203,7 +194,7 @@ class MyApp extends StatelessWidget {
           );
 
           return MaterialApp(
-            title: 'Zero Deudas',
+            title: '3Way',
             theme: lightTheme,
             darkTheme: darkTheme,
             themeMode: themeProvider.themeMode,

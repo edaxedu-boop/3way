@@ -29,39 +29,89 @@ class DebtsScreenState extends State<DebtsScreen> {
     });
   }
 
-  Future<void> _deleteDebt(int id) async {
-    final bool? confirm = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar'),
-        content: const Text(
-          '¿Estás seguro de que quieres eliminar esta deuda? Esta acción no se puede deshacer.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
-          ),
-        ],
+  Future<void> _performDeleteDebt(int id) async {
+    await dbHelper.deleteDebt(id);
+    if (!mounted) return;
+    Provider.of<BalanceProvider>(context, listen: false).fetchBalances();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Deuda eliminada permanentemente.'),
+        backgroundColor: Colors.red,
       ),
     );
+    refreshDebtData();
+  }
 
-    if (confirm == true) {
-      await dbHelper.deleteDebt(id);
-      if (!mounted) return;
-      Provider.of<BalanceProvider>(context, listen: false).fetchBalances();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Deuda eliminada'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      refreshDebtData();
-    }
+  Future<bool?> _showConfirmationDialog() {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          backgroundColor: isDarkMode ? const Color(0xFF2D323E) : Colors.white,
+          title: Column(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 50),
+              const SizedBox(height: 16),
+              Text(
+                'Confirmar Eliminación',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            '¿Estás seguro de que quieres eliminar esta deuda?\nEsta acción es permanente y no se puede deshacer.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: isDarkMode ? Colors.white.withOpacity(0.7) : Colors.black54,
+            ),
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: isDarkMode ? Colors.white.withOpacity(0.8) : Colors.black54),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: Text(
+                'Cancelar',
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, color: isDarkMode ? Colors.white : Colors.black87),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: Text(
+                'Eliminar',
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.center,
+        );
+      },
+    );
   }
 
   void _showPayDialog(Debt debt) {
@@ -395,7 +445,12 @@ class DebtsScreenState extends State<DebtsScreen> {
         return Dismissible(
           key: ValueKey(debt.id),
           direction: DismissDirection.endToStart,
-          onDismissed: (direction) => _deleteDebt(debt.id!),
+          confirmDismiss: (direction) async {
+            return await _showConfirmationDialog();
+          },
+          onDismissed: (direction) {
+            _performDeleteDebt(debt.id!);
+          },
           background: Container(
             margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
             decoration: BoxDecoration(
